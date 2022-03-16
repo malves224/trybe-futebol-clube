@@ -28,7 +28,7 @@ services:
       # Dica: Relembre aqui da comunicação interna entre containers
       - DB_USER=root
       - DB_PASS=123456
-      - DB_HOST=localhost
+      - DB_HOST=db
       - DB_NAME=TRYBE_FUTEBOL_CLUBE
       - DB_PORT=3306
     healthcheck:
