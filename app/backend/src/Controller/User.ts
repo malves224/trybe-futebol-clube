@@ -1,10 +1,11 @@
 import { Response, Request, NextFunction } from 'express';
 import UserSchema from '../schema/User';
 
+const schema = new UserSchema();
+
 export class User {
   static async validadeLogin(req: Request, res: Response, next: NextFunction) {
     const { email, password } = req.body;
-    const schema = new UserSchema();
     try {
       await schema.validateData({ email, password });
       next();
@@ -14,10 +15,11 @@ export class User {
   }
 
   static loginUser(req: Request, res: Response) {
-    console.log(req.body);
     return res.status(200).json('ok');
   }
 }
+
+// export const UserControllers = new User(new UserSchema());
 
 export default {
   loginUser: [User.validadeLogin, User.loginUser],
