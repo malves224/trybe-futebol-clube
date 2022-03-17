@@ -11,7 +11,7 @@ chai.use(chaiHttp);
 
 const { expect } = chai;
 
-describe('Seu teste', () => {
+describe('Rota post', () => {
   /**
    * Exemplo do uso de stubs com tipos
    */

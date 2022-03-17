@@ -18,7 +18,7 @@ describe('Rota POST /Login', () => {
    * Exemplo do uso de stubs com tipos
    */
 
-  let chaiHttpResponse: Response;
+  // let chaiHttpResponse: Response;
 
    before(async () => {
      // sinon.stub(Example, "findOne").resolves();
@@ -26,29 +26,30 @@ describe('Rota POST /Login', () => {
 
    after(()=>{
      // (Example.findOne as sinon.SinonStub).restore();
+     // chaiHttpResponse = null
    })
 
 
    it('Ao passar sem a chave email, Retorna status 401 com a menssagem "All fields must be filled"', async () => {
-     chaiHttpResponse = await chai.request(app)
+     let chaiHttpResponse = await chai.request(app)
         .post('/Login')
-        .send({"password": "123456"})
+        .send({"password": "123456"});        
 
      expect(chaiHttpResponse).to.have.status(401);
-     expect(chaiHttpResponse).to.have.property("message", "All fields must be filled");
+     expect(chaiHttpResponse.body).to.have.property("message", "All fields must be filled");
    });
 
    it('Ao passar sem a chave password, Retorna status 401 com a menssagem "All fields must be filled"', async () => {
-    chaiHttpResponse = await chai.request(app)
+    let chaiHttpResponse = await chai.request(app)
        .post('/Login')
        .send({"email": "teste@test.com"})
 
     expect(chaiHttpResponse).to.have.status(401);
-    expect(chaiHttpResponse).to.have.property("message", "All fields must be filled");
+    expect(chaiHttpResponse.body).to.have.property("message", "All fields must be filled");
   });
 
   it('Ao passar um email invalido, Retorna status 401 com a menssagem "Incorrect email or password"', async () => {
-    chaiHttpResponse = await chai.request(app)
+    let chaiHttpResponse = await chai.request(app)
        .post('/Login')
        .send({"email": "teste@test.com", "password": "123456"})
 
@@ -57,7 +58,7 @@ describe('Rota POST /Login', () => {
   });
 
   it('Ao passar um senha invalido, Retorna status 401 com a menssagem "Incorrect email or password"', async () => {
-    chaiHttpResponse = await chai.request(app)
+    let chaiHttpResponse = await chai.request(app)
        .post('/Login')
        .send({"email": "admin@admin.com", "password": "123456"})
 
@@ -66,9 +67,8 @@ describe('Rota POST /Login', () => {
   });
 
   it('Ao passar login correto, Retorna status 200 com os dados do usuario no corpo da response', async () => {
-    chaiHttpResponse = await chai.request(app)
-       .post('/Login')
-       .send({"email": "admin@admin.com", "password": "senha correta"})
+    let chaiHttpResponse = await chai.request(app).post('/Login')
+       .send({"email": "admin@admin.com", "password": "senha correta"})       
 
     expect(chaiHttpResponse).to.have.status(200);
     // expect(chaiHttpResponse.body).to.deep.equals(valorEsperado)

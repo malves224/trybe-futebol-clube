@@ -1,13 +1,19 @@
+import bodyParser = require('body-parser');
 import * as express from 'express';
+import user from './Controller/User';
 
 class App {
   public app: express.Express;
+
+  // private User: User;
   // ...
 
   constructor() {
     // ...
     this.app = express();
     this.config();
+    this.app.use(bodyParser.json());
+    this.app.post('/Login', user.loginUser);
     // ...
   }
 
@@ -20,10 +26,8 @@ class App {
     };
 
     this.app.use(accessControl);
-    // ...
   }
 
-  // ...
   public start(PORT: string | number):void {
     this.app.listen(PORT, () => console.log(`app rodando ${PORT}`));
   }
