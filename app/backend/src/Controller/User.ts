@@ -1,4 +1,5 @@
 import { Response, Request, NextFunction } from 'express';
+import UserService from '../Service/User';
 import UserSchema from '../schema/User';
 
 const schema = new UserSchema();
@@ -14,8 +15,16 @@ export class User {
     }
   }
 
-  static loginUser(req: Request, res: Response) {
-    return res.status(200).json('ok');
+  static async loginUser(req: Request, res: Response) {
+    const { email, password } = req.body;
+    try {
+      const response = await UserService.getUser(email, password);
+      return res.status(200).json(response);
+    } catch (error) {
+      if (error instanceof Error) {
+        return res.status(401).json({ message: error.message });
+      }
+    }
   }
 }
 
