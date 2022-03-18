@@ -1,4 +1,5 @@
 import { Response, Request, NextFunction } from 'express';
+import { validateToken } from '../auth/util';
 import UserService from '../Service/User';
 import UserSchema from '../schema/User';
 
@@ -26,10 +27,22 @@ export class User {
       }
     }
   }
+
+  static async validateToken(req: Request, res: Response) {
+    try {
+      const dataToken = await validateToken(req.headers.authorization as string);
+      return res.status(200).json(dataToken?.role);
+    } catch (error) {
+      if (error instanceof Error) {
+        return res.status(401).end();
+      }
+    }
+  }
 }
 
 // export const UserControllers = new User(new UserSchema());
 
 export default {
   loginUser: [User.validadeLogin, User.loginUser],
+  validate: [User.validateToken],
 };

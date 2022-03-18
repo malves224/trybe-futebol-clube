@@ -14,6 +14,7 @@ class App {
     this.config();
     this.app.use(bodyParser.json());
     this.app.post('/Login', userController.loginUser);
+    this.app.get('/Login/validate', userController.validate);
     // ...
   }
 
