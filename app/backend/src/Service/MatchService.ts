@@ -10,22 +10,20 @@ export default class MatchService {
   ],
   };
 
-  private static transformBool(value: string) {
-    let output = false;
+  private static checkQueryParam(value: string) {
     if (value === 'true') {
-      output = true;
+      return { inProgress: true };
+    } if (value === 'false') {
+      return { inProgress: false };
     }
-    return output;
+    return {};
   }
 
   async getAll(searchColumn?: any) {
-    const whereSanitized = {
-      ...searchColumn,
-      inProgress: MatchService.transformBool(searchColumn.inProgress),
-    };
+    const inProgress = MatchService.checkQueryParam(searchColumn.inProgress);
 
     const allMatch = await this.modelMatch.findAll({
-      where: { ...whereSanitized },
+      where: { ...inProgress },
       ...this.includeClubs,
     });
     return allMatch;
