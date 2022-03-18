@@ -19,7 +19,7 @@ export default class UserService {
     return response;
   }
 
-  async getUser(emailToVerify: string, password: string) {
+  async login(emailToVerify: string, password: string) {
     const response = await this.verifyLogin(emailToVerify, password);
     const { id, username, role, email } = response;
     const token = await this.jwt.generateToken({ id, username, role, email });

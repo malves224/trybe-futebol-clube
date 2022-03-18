@@ -21,7 +21,7 @@ export class User {
   static async loginUser(req: Request, res: Response) {
     const { email, password } = req.body;
     try {
-      const response = await userService.getUser(email, password);
+      const response = await userService.login(email, password);
       return res.status(200).json(response);
     } catch (error) {
       if (error instanceof Error) {

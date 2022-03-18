@@ -1,5 +1,6 @@
 import bodyParser = require('body-parser');
 import * as express from 'express';
+import Club from './Controller/Club';
 import userController from './Controller/User';
 
 class App {
@@ -15,6 +16,7 @@ class App {
     this.app.use(bodyParser.json());
     this.app.post('/Login', userController.loginUser);
     this.app.get('/Login/validate', userController.validate);
+    this.app.get('/Clubs', Club.getAll);
     // ...
   }
 
