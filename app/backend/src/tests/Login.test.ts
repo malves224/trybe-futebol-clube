@@ -75,4 +75,27 @@ describe('Rota POST /Login', () => {
     expect(chaiHttpResponse.body).to.have.property('token');
     expect(chaiHttpResponse.body.user).to.deep.equals(expectValue)
   });
+
+  describe('Rota GET /Login/validate ', () => {
+    it('Ao passar um token invalido no header, retorna status 401.', async () => {
+      let chaiHttpResponse = await chai.request(app)
+      .get('/Login/validate')
+      .set({"Authorization": "token invalido"});
+        
+      expect(chaiHttpResponse).to.have.status(401);
+    });
+
+    it('Ao passar um token valido no header, retorna status 200 com a role do usuario no body da response.', async () => {
+      let {body: { token }} = await chai.request(app).post('/Login')
+      .send({"email": "admin@admin.com", "password": "secret_admin"})       
+
+
+      let chaiHttpResponse = await chai.request(app)
+      .get('/Login/validate')
+      .set({"Authorization": token});
+        
+      expect(chaiHttpResponse).to.have.status(200);
+      expect(chaiHttpResponse.body).to.deep.equals("admin");
+    });
+  })
 });
