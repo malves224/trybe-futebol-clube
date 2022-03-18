@@ -2,8 +2,8 @@ import Joi = require('joi');
 
 export default class UserSchema {
   schema = Joi.object({
-    email: Joi.required(),
-    password: Joi.required(),
+    email: Joi.required().empty(''),
+    password: Joi.required().empty(''),
   });;
 
   async validateData(dataToVerify: any) {
