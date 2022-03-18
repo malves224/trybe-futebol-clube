@@ -1,9 +1,11 @@
 import { Response, Request, NextFunction } from 'express';
-import { validateToken } from '../auth/util';
+import Jwt from '../auth/Jwt';
 import UserService from '../Service/User';
 import UserSchema from '../schema/User';
 
 const schema = new UserSchema();
+const userService = new UserService();
+const jwt = new Jwt();
 
 export class User {
   static async validadeLogin(req: Request, res: Response, next: NextFunction) {
@@ -19,7 +21,7 @@ export class User {
   static async loginUser(req: Request, res: Response) {
     const { email, password } = req.body;
     try {
-      const response = await UserService.getUser(email, password);
+      const response = await userService.getUser(email, password);
       return res.status(200).json(response);
     } catch (error) {
       if (error instanceof Error) {
@@ -30,7 +32,7 @@ export class User {
 
   static async validateToken(req: Request, res: Response) {
     try {
-      const dataToken = await validateToken(req.headers.authorization as string);
+      const dataToken = await jwt.validate(req.headers.authorization as string);
       return res.status(200).json(dataToken?.role);
     } catch (error) {
       if (error instanceof Error) {

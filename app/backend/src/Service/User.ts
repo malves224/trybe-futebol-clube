@@ -1,10 +1,14 @@
 import * as bcrypt from 'bcryptjs';
-import generateToken from '../auth/util';
+import Jwt from '../auth/Jwt';
 import User from '../database/models/user';
 
 export default class UserService {
-  private static async verifyLogin(email: string, password: string) {
-    const response = await User.findOne({ where: { email } });
+  private model = User;
+
+  private jwt = new Jwt();
+
+  private async verifyLogin(email: string, password: string) {
+    const response = await this.model.findOne({ where: { email } });
     if (!response) {
       throw new Error('Incorrect email or password');
     }
@@ -15,10 +19,10 @@ export default class UserService {
     return response;
   }
 
-  static async getUser(emailToVerify: string, password: string) {
-    const response = await UserService.verifyLogin(emailToVerify, password);
+  async getUser(emailToVerify: string, password: string) {
+    const response = await this.verifyLogin(emailToVerify, password);
     const { id, username, role, email } = response;
-    const token = await generateToken({ id, username, role, email });
+    const token = await this.jwt.generateToken({ id, username, role, email });
     return {
       user: {
         id, username, role, email,
