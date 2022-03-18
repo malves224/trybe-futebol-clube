@@ -22,6 +22,7 @@ Match.init({
   id: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    primaryKey: true,
   },
   homeTeam: {
     type: DataTypes.INTEGER,
@@ -46,12 +47,12 @@ Match.init({
 }, {
   underscored: true,
   sequelize: db,
-  // modelName: 'example',
+  modelName: 'matchs',
   timestamps: false,
 });
 
-Match.hasOne(Club, { foreignKey: 'homeTeam' });
-Match.hasOne(Club, { foreignKey: 'awayTeam' });
+Match.belongsTo(Club, { foreignKey: 'homeTeam', as: 'homeClub' });
+Match.belongsTo(Club, { foreignKey: 'awayTeam', as: 'awayClub' });
 
 /**
   * `Workaround` para aplicar as associations em TS:

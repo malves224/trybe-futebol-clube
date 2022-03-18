@@ -2,6 +2,7 @@ import bodyParser = require('body-parser');
 import * as express from 'express';
 import Club from './Controller/Club';
 import userController from './Controller/User';
+import Match from './Controller/Match';
 
 class App {
   public app: express.Express;
@@ -18,6 +19,7 @@ class App {
     this.app.get('/Login/validate', userController.validate);
     this.app.get('/Clubs', Club.getAll);
     this.app.get('/Clubs/:id', Club.getOne);
+    this.app.get('/matchs', Match.getAll);
     // ...
   }
 
