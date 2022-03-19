@@ -4,6 +4,8 @@ import chaiHttp = require('chai-http');
 import { app } from '../app';
 import Match from '../database/models/match';
 import { allMatchFineshed, allMatchInProgress, allMatchWithClubs } from './mock/db/matchs';
+import User from '../database/models/user';
+import { adminUserMock } from './mock/db/user';
 
 chai.use(chaiHttp);
 
@@ -69,7 +71,7 @@ describe('Rota GET /matchs?inProgres=false', () => {
   
 });
 
-describe('Rota POST /matchs, criação de partidas.', () => {
+describe('Rota POST /matchs, tentativa de criação de partidas.', () => {
 
   const partidaForCreate = {
     "homeTeam": 16, // O valor deve ser o id do time
@@ -79,51 +81,87 @@ describe('Rota POST /matchs, criação de partidas.', () => {
     "inProgress": true // a partida deve ser criada como em progresso
   };
 
-  before(async () => {
-    // sinon.stub(Match, "findAll").resolves(allMatchFineshed as unknown as Match[]);
-  });
 
-  after(()=>{
-    // (Match.findAll as sinon.SinonStub).restore();
-  });
+  describe('Em cassos de BAD Request', () => {
 
-  it('Sem token valido, retorna status 401 com a menssagem "token invalido"', async () => {
-    let chaiHttpResponse = await chai.request(app)
-    .post('/matchs?inProgress=false')
-    .set('Authorization', 'token Invalido')
-    .send(partidaForCreate)
+    before(async () => {
+      sinon.stub(User, "findOne").resolves(adminUserMock as User);
+      sinon.stub(Match, "findOne").resolves(null);
+    });
+  
+    after(()=>{
+      (User.findOne as sinon.SinonStub).restore();
+      (Match.findOne as sinon.SinonStub).restore();
+    });
+  
+    it('Sem token valido, retorna status 401 com a menssagem "jwt malformed"', async () => {
+      let chaiHttpResponse = await chai.request(app)
+      .post('/matchs')
+      .set('Authorization', 'jwt malformed')
+      .send(partidaForCreate)
+  
+      expect(chaiHttpResponse).to.have.status(401);
+      expect(chaiHttpResponse.body).to.have.property("message", "jwt malformed");
+    });
+  
+    it(`Ao tentar criar com clubs iguais, retorna status 401 com a menssagem devida`, async () => {
+      const { body: { token } } = await chai.request(app)
+      .post('/Login')
+      .send({"email": "admin@admin.com", "password": "secret_admin"});
+  
+      const chaiHttpResponse = await chai.request(app)
+      .post('/matchs')
+      .set('authorization', token)
+      .send({...partidaForCreate, awayTeam: 16});    
+  
+      expect(chaiHttpResponse).to.have.status(401);
+      expect(chaiHttpResponse.body).to.have.property("message", "It is not possible to create a match with two equal teams");
+    });
+  
+    it(`Ao tentar criar com clube que não existe, retorna status 401 com a menssagem devida`, async () => {
+      const { body: { token } } = await chai.request(app)
+      .post('/Login')
+      .send({"email": "admin@admin.com", "password": "secret_admin"});
+  
+      let chaiHttpResponse = await chai.request(app)
+      .post('/matchs')
+      .set('authorization', token)
+      .send({...partidaForCreate, awayTeam: 9999});
+  
+      expect(chaiHttpResponse).to.have.status(401);
+      expect(chaiHttpResponse.body).to.have.property("message", "Team not found");
+    });
+  })
 
-    expect(chaiHttpResponse).to.have.status(401);
-    expect(chaiHttpResponse.body).to.have.property("message", "token invalido");
-  });
 
-  it(`Ao tentar criar com clubs iguais, retorna status 401 com a menssagem devida`, async () => {
-    let chaiHttpResponse = await chai.request(app)
-    .post('/matchs?inProgress=false')
-    .set('Authorization', 'token Invalido')
-    .send({...partidaForCreate, awayTeam: 16})
+  describe('Em casso de sucesso', () => {
 
-    expect(chaiHttpResponse).to.have.status(401);
-    expect(chaiHttpResponse.body).to.have.property("message", "It is not possible to create a match with two equal teams");
-  });
-
-  it(`Ao tentar criar com clube que não existe, retorna status 401 com a menssagem devida`, async () => {
-    let chaiHttpResponse = await chai.request(app)
-    .post('/matchs?inProgress=false')
-    .set('Authorization', 'token Invalido')
-    .send({...partidaForCreate, awayTeam: 9999})
-
-    expect(chaiHttpResponse).to.have.status(401);
-    expect(chaiHttpResponse.body).to.have.property("message", "Team not found");
-  });
-
-  it(`Ao criar uma partida, retorna status 201 com os dados no corpo da response`, async () => {
-    let chaiHttpResponse = await chai.request(app)
-    .post('/matchs?inProgress=false')
-    .set('Authorization', 'token Invalido')
-    .send({...partidaForCreate, awayTeam: 9999})
-
-    expect(chaiHttpResponse).to.have.status(401);
-    expect(chaiHttpResponse.body).to.deep.equals({id: 1, partidaForCreate})
-  });
+    before(async () => {
+      sinon.stub(User, "findOne").resolves(adminUserMock as User);
+      sinon.stub(Match, "findOne").resolves({ id: 1 } as Match);
+      sinon.stub(Match, "create").resolves({id: 1, ...partidaForCreate} as unknown as Match)
+    });
+  
+    after(()=>{
+      (User.findOne as sinon.SinonStub).restore();
+      (Match.findOne as sinon.SinonStub).restore();
+      (Match.create as sinon.SinonStub).restore();
+    });
+  
+  
+    it(`Ao criar uma partida, retorna status 201 com os dados no corpo da response`, async () => {
+      const { body: { token } } = await chai.request(app)
+      .post('/Login')
+      .send({"email": "admin@admin.com", "password": "secret_admin"});
+  
+  
+      let chaiHttpResponse = await chai.request(app)
+      .post('/matchs')
+      .set('authorization', token)
+      .send(partidaForCreate);
+  
+      expect(chaiHttpResponse).to.have.status(201);
+      expect(chaiHttpResponse.body).to.deep.equals({id: 1, ...partidaForCreate})
+    });
+  })
 });
