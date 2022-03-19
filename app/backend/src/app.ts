@@ -3,6 +3,7 @@ import * as express from 'express';
 import Club from './Controller/Club';
 import userController from './Controller/User';
 import Match from './Controller/Match';
+import MiddlewareAuth from './auth/MiddlewareAuth';
 
 class App {
   public app: express.Express;
@@ -20,7 +21,7 @@ class App {
     this.app.get('/Clubs', Club.getAll);
     this.app.get('/Clubs/:id', Club.getOne);
     this.app.get('/matchs', Match.getAll);
-    // this.app.post('/matchs', Match.create);
+    this.app.post('/matchs', MiddlewareAuth.authToken, Match.create);
     // ...
   }
 

@@ -10,7 +10,14 @@ export default class Match {
     res.status(200).json(matchsResponse);
   }
 
-  // static async create(req: Request, res: Response) {
-
-  // }
+  static async create(req: Request, res: Response) {
+    try {
+      const responseCreate = await service.create(req.body);
+      return res.status(201).json(responseCreate);
+    } catch (error) {
+      if (error instanceof Error) {
+        return res.status(401).json({ message: error.message });
+      }
+    }
+  }
 }
