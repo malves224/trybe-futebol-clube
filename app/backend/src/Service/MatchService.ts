@@ -17,7 +17,7 @@ export default class MatchService {
 
     const teams = await Promise.all(listPromise).then((res) => res);
     if (teams.some((team) => !team)) {
-      throw new Error('Team not found');
+      throw new Error('There is no team with such id!');
     }
   }
 

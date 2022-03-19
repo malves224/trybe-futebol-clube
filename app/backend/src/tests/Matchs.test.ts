@@ -129,7 +129,7 @@ describe('Rota POST /matchs, tentativa de criação de partidas.', () => {
       .send({...partidaForCreate, awayTeam: 9999});
   
       expect(chaiHttpResponse).to.have.status(401);
-      expect(chaiHttpResponse.body).to.have.property("message", "Team not found");
+      expect(chaiHttpResponse.body).to.have.property("message", "There is no team with such id!");
     });
   })
 
