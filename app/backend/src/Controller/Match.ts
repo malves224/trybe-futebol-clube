@@ -9,4 +9,8 @@ export default class Match {
     const matchsResponse = await service.getAll({ inProgress });
     res.status(200).json(matchsResponse);
   }
+
+  // static async create(req: Request, res: Response) {
+
+  // }
 }
