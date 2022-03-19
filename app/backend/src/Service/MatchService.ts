@@ -11,6 +11,13 @@ export default class MatchService {
   ],
   };
 
+  private async checkIfMatchExist(idMatch: number | string) {
+    const response = await this.modelMatch.findOne({ where: { id: idMatch } });
+    if (!response) {
+      throw new Error('id match does not exist');
+    }
+  }
+
   private async checkIfTeamsExists(teamsListIds: number[]) {
     const listPromise = teamsListIds
       .map((team) => this.modelMatch.findOne({ where: { id: team } }));

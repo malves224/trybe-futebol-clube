@@ -28,7 +28,7 @@ export default class Match {
       return res.status(200).end();
     } catch (error) {
       if (error instanceof Error) {
-        return res.status(500).json({ message: error.message });
+        return res.status(401).json({ message: error.message });
       }
     }
   }

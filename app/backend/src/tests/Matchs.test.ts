@@ -176,7 +176,7 @@ describe('Rota POST /matchs, tentativa de criação de partidas.', () => {
     });
 
 
-    it.only('Retorna status 200, ao finalziar uma partida', async () => {
+    it('Retorna status 200, ao finalziar uma partida', async () => {
       let chaiHttpResponse = await chai.request(app)
       .patch('/matchs/50/finish');
   
