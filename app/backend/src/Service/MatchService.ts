@@ -57,4 +57,8 @@ export default class MatchService {
 
     return { id: responseCreate.id, ...match };
   }
+
+  async finish(idMatch: number | string) {
+    await this.modelMatch.update({ inProgress: false }, { where: { id: idMatch } });
+  }
 }

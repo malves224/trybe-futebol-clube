@@ -22,6 +22,7 @@ class App {
     this.app.get('/Clubs/:id', Club.getOne);
     this.app.get('/matchs', Match.getAll);
     this.app.post('/matchs', MiddlewareAuth.authToken, Match.create);
+    this.app.patch('/matchs/:id/finish', Match.finish);
     // ...
   }
 
