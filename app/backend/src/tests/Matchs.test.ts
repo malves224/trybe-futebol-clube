@@ -163,5 +163,24 @@ describe('Rota POST /matchs, tentativa de criação de partidas.', () => {
       expect(chaiHttpResponse).to.have.status(201);
       expect(chaiHttpResponse.body).to.deep.equals({id: 1, ...partidaForCreate})
     });
-  })
+  });
+
+  describe('Patch /matchs/:id/finish fineRota de finalizaçao de partida', () => {
+
+    before(async () => {
+      sinon.stub(Match, "update").resolves();
+    });
+  
+    after(()=>{
+      (Match.update as sinon.SinonStub).restore();
+    });
+
+
+    it.only('Retorna status 200, ao finalziar uma partida', async () => {
+      let chaiHttpResponse = await chai.request(app)
+      .patch('/matchs/50/finish');
+  
+      expect(chaiHttpResponse).to.have.status(200);
+    });
+  });
 });
