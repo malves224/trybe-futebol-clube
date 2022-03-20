@@ -15,14 +15,14 @@ class App {
     // ...
     this.app = express();
     this.config();
-    this.app.use(bodyParser.json());
     this.app.post('/Login', userController.loginUser);
     this.app.get('/Login/validate', userController.validate);
     this.app.get('/Clubs', Club.getAll);
     this.app.get('/Clubs/:id', Club.getOne);
+    this.app.patch('/matchs/:id/finish', Match.finish);
+    this.app.patch('/matchs/:id', Match.editScoreboard);
     this.app.get('/matchs', Match.getAll);
     this.app.post('/matchs', MiddlewareAuth.authToken, Match.create);
-    this.app.patch('/matchs/:id/finish', Match.finish);
     // ...
   }
 
@@ -31,10 +31,12 @@ class App {
       res.header('Access-Control-Allow-Origin', '*');
       res.header('Access-Control-Allow-Methods', 'GET,POST,DELETE,OPTIONS,PUT,PATCH');
       res.header('Access-Control-Allow-Headers', '*');
+      console.log('middleware de cors');
+
       next();
     };
 
-    this.app.use(accessControl);
+    this.app.use([accessControl, bodyParser.json()]);
   }
 
   public start(PORT: string | number):void {

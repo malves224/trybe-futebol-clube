@@ -1,6 +1,6 @@
 import Club from '../database/models/club';
 import Match from '../database/models/match';
-import IMatch, { ITeams } from './Interface/IMatch';
+import IMatch, { IScoreboard, ITeams } from './Interface/IMatch';
 
 export default class MatchService {
   modelMatch = Match;
@@ -67,5 +67,10 @@ export default class MatchService {
 
   async finish(idMatch: number | string) {
     await this.modelMatch.update({ inProgress: false }, { where: { id: idMatch } });
+  }
+
+  async editScoreboard(idMatch: number | string, newScoreboard: IScoreboard) {
+    const { awayTeamGoals, homeTeamGoals } = newScoreboard;
+    await this.modelMatch.update({ awayTeamGoals, homeTeamGoals }, { where: { id: idMatch } });
   }
 }

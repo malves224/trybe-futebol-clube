@@ -25,11 +25,18 @@ export default class Match {
     const { id: idMatch } = req.params;
     try {
       await service.finish(idMatch as string);
-      return res.status(200).end();
+      return res.status(200).json({ message: `Match id ${idMatch} finish` });
     } catch (error) {
       if (error instanceof Error) {
         return res.status(401).json({ message: error.message });
       }
     }
+  }
+
+  static async editScoreboard(req: Request, res: Response) {
+    const { id: idMatch } = req.params;
+    const { homeTeamGoals, awayTeamGoals } = req.body;
+    await service.editScoreboard(idMatch as string, { homeTeamGoals, awayTeamGoals });
+    res.status(200).json({ homeTeamGoals, awayTeamGoals });
   }
 }

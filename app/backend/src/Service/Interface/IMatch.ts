@@ -3,8 +3,11 @@ export interface ITeams {
   'awayTeam': number,
 }
 
-export default interface IMatch extends ITeams {
-  'homeTeamGoals': number,
-  'awayTeamGoals': number,
+export interface IScoreboard {
+  'homeTeamGoals': number | string,
+  'awayTeamGoals': number | string,
+}
+
+export default interface IMatch extends ITeams, IScoreboard {
   'inProgress': boolean
 }
