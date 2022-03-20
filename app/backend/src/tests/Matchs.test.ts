@@ -185,7 +185,7 @@ describe('Patch /matchs/:id/finish fineRota de finalizaçao de partida', () => {
   });
 });
 
-describe.only('Patch /matchs/:id, que muda o placar de uma partida', () => {
+describe('Patch /matchs/:id, que muda o placar de uma partida', () => {
   before(async () => {
     // sinon.stub(Match, "update").resolves();
   });
