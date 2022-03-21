@@ -1,9 +1,17 @@
+import { QueryTypes } from 'sequelize';
 import Club from '../database/models/club';
 import Match from '../database/models/match';
 import IMatch, { IScoreboard, ITeams } from './Interface/IMatch';
+import sequelize from '../database/models';
+import ITableLeaderboard from './Interface/ITable';
+import generateQueryAwayOrHome from './query';
+
+export type FilterLeaderboard = 'home' | 'away' | 'all';
 
 export default class MatchService {
   modelMatch = Match;
+
+  sequelizeModel = sequelize;
 
   includeClubs = { include: [
     { model: Club, as: 'homeClub', attributes: { exclude: ['id'] } },
@@ -72,5 +80,43 @@ export default class MatchService {
   async editScoreboard(idMatch: number | string, newScoreboard: IScoreboard) {
     const { awayTeamGoals, homeTeamGoals } = newScoreboard;
     await this.modelMatch.update({ awayTeamGoals, homeTeamGoals }, { where: { id: idMatch } });
+  }
+
+  static formatLeaderBoard(table: ITableLeaderboard[]) {
+    const tableFormated = table.map((row) => ({
+      ...row,
+      totalPoints: +row.totalPoints,
+      totalGames: +row.totalGames,
+      totalVictories: +row.totalVictories,
+      totalDraws: +row.totalDraws,
+      totalLosses: +row.totalLosses,
+      goalsFavor: +row.goalsFavor,
+      goalsOwn: +row.goalsOwn,
+      goalsBalance: +row.goalsBalance,
+      efficiency: +((+row.totalPoints / (+row.totalGames * 3)) * 100).toFixed(2),
+    }));
+    return tableFormated;
+  }
+
+  async generateLeaderboard(filter: FilterLeaderboard) {
+    if (filter === 'all') {
+      // querry table all
+      return [{
+        name: 'Santos',
+        totalPoints: 9,
+      }];
+    }
+    const filterQuery = filter === 'home' ? 'home_team' : 'away_team';
+
+    const responseQuery = await this.sequelizeModel
+      .query(generateQueryAwayOrHome(filterQuery), {
+        replacements: { filterQuery },
+        type: QueryTypes.SELECT,
+      });
+
+    const leaderBoardFormated = MatchService
+      .formatLeaderBoard(responseQuery as ITableLeaderboard[]);
+
+    return leaderBoardFormated;
   }
 }
