@@ -23,6 +23,8 @@ class App {
     this.app.patch('/matchs/:id', Match.editScoreboard);
     this.app.get('/matchs', Match.getAll);
     this.app.post('/matchs', MiddlewareAuth.authToken, Match.create);
+    this.app.get('/leaderboard/:homeOrAway', Match.leaderboard);
+    this.app.get('/leaderboard/', Match.leaderboard);
     // ...
   }
 

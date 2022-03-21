@@ -39,4 +39,12 @@ export default class Match {
     await service.editScoreboard(idMatch as string, { homeTeamGoals, awayTeamGoals });
     res.status(200).json({ homeTeamGoals, awayTeamGoals });
   }
+
+  static async leaderboard(req: Request, res: Response) {
+    const { homeOrAway: paramFilter } = req.params;
+    const homeOrAway = paramFilter !== 'home' && paramFilter !== 'away' ? 'all' : paramFilter;
+    const data = await service.generateLeaderboard(homeOrAway);
+
+    res.status(200).json(data);
+  }
 }
