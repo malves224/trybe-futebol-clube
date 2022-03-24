@@ -3,8 +3,9 @@ import Club from '../database/models/club';
 import Match from '../database/models/match';
 import IMatch, { IScoreboard, ITeams } from './Interface/IMatch';
 import sequelize from '../database/models';
-import ITableLeaderboard from './Interface/ITable';
+import ITableLeaderboard, { ItableLeadorboardNumerics } from './Interface/ITable';
 import generateQueryAwayOrHome from './query';
+import ISortConfig from './Interface/ISort';
 
 export type FilterLeaderboard = 'home' | 'away' | 'all';
 
@@ -12,6 +13,14 @@ export default class MatchService {
   modelMatch = Match;
 
   sequelizeModel = sequelize;
+
+  criterionTiebreake = [
+    { columnName: 'totalPoints', desc: true },
+    { columnName: 'totalVictories', desc: true },
+    { columnName: 'goalsBalance', desc: true },
+    { columnName: 'goalsFavor', desc: true },
+    { columnName: 'goalsOwn' },
+  ];
 
   includeClubs = { include: [
     { model: Club, as: 'homeClub', attributes: { exclude: ['id'] } },
@@ -93,20 +102,55 @@ export default class MatchService {
       goalsFavor: +row.goalsFavor,
       goalsOwn: +row.goalsOwn,
       goalsBalance: +row.goalsBalance,
-      efficiency: +((+row.totalPoints / (+row.totalGames * 3)) * 100).toFixed(2),
+      efficiency: MatchService.getEfficiency(row),
     }));
     return tableFormated;
   }
 
-  async generateLeaderboard(filter: FilterLeaderboard) {
-    if (filter === 'all') {
-      // querry table all
-      return [{
-        name: 'Santos',
-        totalPoints: 9,
-      }];
-    }
-    const filterQuery = filter === 'home' ? 'home_team' : 'away_team';
+  static sortTiebreaker(listForSort: any[], listCriterion: ISortConfig[]) {
+    const callBackSort = ((a: number, b: number) => {
+      let [output, needTiebreaker] = [0, true];
+      listCriterion.forEach((column) => {
+        const [maior, menor] = column.desc ? [-1, 1] : [1, -1];
+        const currentColumn = (a as never)[column.columnName];
+        const nextColumn = (b as never)[column.columnName];
+        if (needTiebreaker) {
+          if (currentColumn > nextColumn) { output = maior; needTiebreaker = false; }
+          if (currentColumn < nextColumn) { output = menor; needTiebreaker = false; }
+        }
+      });
+      return output;
+    });
+    return listForSort.sort(callBackSort);
+  }
+
+  private static getEfficiency(rowTalbe: ItableLeadorboardNumerics) {
+    return +((+rowTalbe.totalPoints / (+rowTalbe.totalGames * 3)) * 100).toFixed(2);
+  }
+
+  private async joinLeaderBoard() {
+    const [tableInHome, tableIAway] = await Promise.all([
+      this.getLeaderboard('home'), this.getLeaderboard('away'),
+    ]);
+    const leaderboardAll: ITableLeaderboard[] = tableInHome.map((homeClub) => {
+      const dataAway = tableIAway.find((awayClub) => homeClub.name === awayClub.name) as any;
+      const dataHome = { ...homeClub } as any;
+      const newRow: any = {};
+      const columnLeaderBoard = Object.keys(dataHome);
+      columnLeaderBoard.forEach((column) => {
+        const columnValue: string | number = dataAway[column];
+        if (typeof columnValue === 'number') { newRow[column] = columnValue + dataHome[column]; }
+      });
+      return { ...homeClub,
+        ...newRow,
+        efficiency: MatchService.getEfficiency(newRow) };
+    });
+
+    return MatchService.sortTiebreaker(leaderboardAll, this.criterionTiebreake);
+  }
+
+  async getLeaderboard(homeOrAway: 'home' | 'away') {
+    const filterQuery = homeOrAway === 'home' ? 'home_team' : 'away_team';
 
     const responseQuery = await this.sequelizeModel
       .query(generateQueryAwayOrHome(filterQuery), {
@@ -117,6 +161,16 @@ export default class MatchService {
     const leaderBoardFormated = MatchService
       .formatLeaderBoard(responseQuery as ITableLeaderboard[]);
 
+    return leaderBoardFormated;
+  }
+
+  async generateLeaderboard(filter: FilterLeaderboard) {
+    if (filter === 'all') {
+      const leaderBoardAll = this.joinLeaderBoard();
+      return leaderBoardAll;
+    }
+
+    const leaderBoardFormated = this.getLeaderboard(filter);
     return leaderBoardFormated;
   }
 }

@@ -39,12 +39,3 @@ describe('Rota GET /leaderboard/:homeOrAway', () => {
       expect(chaiResponse.body).to.deep.equals(expectLeaderBoardOne);
   });
 });
-
-describe.skip('Rota GET /leaderboard', () => {
-  it('Retorna o leaderboard geral', async () => {
-    const chaiResponse = await chai.request(app)
-      .get('/leaderboard');      
-
-    expect(chaiResponse).to.have.status(200);
-  });
-})
