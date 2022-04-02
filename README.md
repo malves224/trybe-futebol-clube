@@ -17,7 +17,7 @@ O frontend da aplicação já estava pronto então desenvolvi apenas o backend, 
 ## Aplicação funcionando :rocket:
 
 ### A aplicação ta on :eyes:
-Acesse agora pelo link >>>>
+Acesse agora pelo link >>>> http://ec2-3-85-118-10.compute-1.amazonaws.com:3000/
 
 ### Rode na sua maquina com docker :whale2:
 
