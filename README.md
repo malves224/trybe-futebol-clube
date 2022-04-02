@@ -3,10 +3,10 @@
 ## Sobre o projeto :soccer:
 O Projeto foi fornecido pela escola de desenvolvimento Trybe com objetivo de avaliar Dockerização, Modelagem de dados com **MySql** através do **Sequelize**, Construção de **API REST** utilizando **Typescript**.
 
-Em trybe futebol clube é possível acompanhar partidas em andamento, consultar classificações dos clubes e também criar partida e alterar placar caso o usuário seja um administrador.
+Em trybe futebol clube é possível acompanhar partidas em andamento, consultar classificação dos clubes e também criar partidas e alterar placar caso o usuário seja um administrador.
 
 ## Habilidades desenvolvidas :computer:
-O frontend da aplicação já estava pronto, então o que foi desenvolvido foi o backend, principais desafios foram:
+O frontend da aplicação já estava pronto então desenvolvi apenas o backend, principais desafios foram:
 
  - Conectar serviços utilizando docker (frontend, backend e o banco de dados).
  - Aplicar os padrões REST para os endpoints da API.
@@ -28,10 +28,11 @@ Rode o seguinte comando em seu terminal:
 
     git clone git@github.com:malves224/trybe-futebol-clube.git && cd trybe-futebol-clube
 
-#### 2º Monte os contêiner utilizando docker compose:
-ATENÇÃO: As portas 3000, 3001, e 3002 devem estar livre.
-Rode o seguinte comando em seu terminal ```npm run compose:up``` Isso irá rodar o arquivo docker-compose que orquestra todos os 3 serviços (backend, frontend, e banco de dados).
-Após a conclusão acesse a porta 3000 para acessar o frontend da aplicação.
+#### 2º Monte os contêineres utilizando docker compose:
+:warning: ATENÇÃO: As portas 3000, 3001, e 3002 devem estar livre. :warning:
+
+Rode o seguinte comando em seu terminal ```npm run compose:up``` isso irá rodar o arquivo docker-compose que orquestra todos os 3 serviços (backend, frontend, e banco de dados).
+Após a conclusão acesse em seu navegador http://localhost:3000/ para acessar o frontend da aplicação.
 Para "desmontar" os serviços basta rodar ```npm run compose:down```.
 
 
