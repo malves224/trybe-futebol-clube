@@ -11,7 +11,7 @@ O frontend da aplicação já estava pronto então desenvolvi apenas o backend, 
  - Conectar serviços utilizando docker (frontend, backend e o banco de dados).
  - Aplicar os padrões REST para os endpoints da API.
  - Testes de integração automatizados dos endpoints.
- - Utilizar Typecript com node e express.
+ - Utilizar Typescript com node e express.
  - Criação de camadas utilizando conceitos de POO.
 
 ## Aplicação funcionando :rocket:
